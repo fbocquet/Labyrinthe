@@ -8,7 +8,7 @@
 			font-weight:bold;
 			text-decoration:none;
 		}
-		
+
 	</style>
 </head>
 
@@ -31,35 +31,55 @@ function clavier(){
 function joypad(){
 	
 	var fleches = new Array() ;
-	
+
+	var joypad = document.createElement("table");
+		joypad.style.position = "absolute";
+		joypad.style.zIndex = 30 ;
+		joypad.style.top = "200px" ;
+		joypad.style.left = "600px";
+
+	document.body.appendChild(joypad);
+
+	var lignes = [];
+	var cellules = [] ;
+
+
+	for (var i = 0; i < 3 ; i++) {
+
+		lignes[i] = document.createElement("tr");
+		joypad.appendChild(lignes[i]);
+
+		cellules[i] = [] ;
+
+		for (var y = 0; y < 3 ; y++) {
+
+			var cellule = document.createElement("td");
+			cellules[i][y] = cellule ;
+			lignes[i].appendChild(cellule);
+
+		};
+	};
+
 	fleches.push(document.createElement("img")) ;
 		fleches[0].src = "haut.png" ;
 		fleches[0].id = "haut" ;
-		fleches[0].style.position = "absolute" ;
-		fleches[0].style.top = "100px" ;
-		fleches[0].style.left= "800px" ;
+		cellules[0][1].appendChild(fleches[0]) ;
 		
 	fleches.push(document.createElement("img")) ;
 		fleches[1].src = "bas.png" ;
 		fleches[1].id = "bas" ;
-		fleches[1].style.position = "absolute" ;
-		fleches[1].style.top = "300px" ;
-		fleches[1].style.left= "800px" ;
+		cellules[2][1].appendChild(fleches[1]) ;
 		
 	fleches.push(document.createElement("img")) ;
 		fleches[2].src = "gauche.png" ;
 		fleches[2].id = "gauche" ;
-		fleches[2].style.position = "absolute" ;
-		fleches[2].style.top = "200px" ;
-		fleches[2].style.left= "700px" ;
-	
+		cellules[1][0].appendChild(fleches[2]) ;
+
 	fleches.push(document.createElement("img")) ;
 		fleches[3].src = "droite.png" ;
 		fleches[3].id = "droite" ;
-		fleches[3].style.position = "absolute" ;
-		fleches[3].style.top = "200px" ;
-		fleches[3].style.left= "900px" ;
-		
+		cellules[1][2].appendChild(fleches[3]) ;
+	
 	for(var c = fleches.length, i = 0 ; i < c ; i++ )
 	{
 		fleches[i].addEventListener('click', function(e) {
@@ -88,9 +108,50 @@ function joypad(){
 			
 		}, false) ;
 		
-		document.body.appendChild(fleches[i]) ;
+		// joypad.appendChild(fleches[i]) ;
 	}
+
+	mover = document.createElement("div");
+		mover.style.height = "29px";
+		mover.style.width = "29px";
+		mover.style.borderRadius = "100px";
+		mover.style.backgroundColor = "white";
+		cellules[1][1].appendChild(mover);
+
+	var dragstorage = { dragging: false };
+
+	document.body.addEventListener("mouseup", function(e){
+
+		dragstorage.dragging = false ;
+
+	}, true);
+
+	document.body.addEventListener('mousedown', function(e) {
 	
+		if(e.target == mover)
+		{
+			dragstorage.dragging = true ;
+			dragstorage.offsetX = e.clientX - joypad.offsetLeft;
+			dragstorage.offsetY = e.clientY - joypad.offsetTop;;
+		}
+
+	}, true) ;
+
+	document.addEventListener('mousemove', function(e){
+	
+		if(dragstorage.dragging)
+		{	
+			var posLeft = e.clientX - dragstorage.offsetX ;
+			var posTop = e.clientY - dragstorage.offsetY ;
+				
+			if(posLeft > 0)
+				joypad.style.left = posLeft + 'px' ;
+					
+			if(posTop > 0) 
+				joypad.style.top = posTop + 'px' ;
+		}
+
+	}, true);
 	
 }
 
@@ -257,8 +318,6 @@ function indexMaze() {
 	}
 }
 
-
-
 function initMaze() {
   maze = new Array();
   for(var x=0;x<mazeH;x++) {
@@ -289,7 +348,7 @@ function unionSets(s1, s2) {
 
 function drawStep(sx,sy) {
 	canvasstep2.beginPath();
-	canvasstep2.fillStyle = "#0000AA";
+	canvasstep2.fillStyle = "#cccc00";
 	canvasstep2.arc(xoff+sx*size+size/2, yoff+sy*size+size/2, size*.15, 0, .01, 1);
 	canvasstep2.fill();
 	canvasstep2.closePath();
@@ -328,7 +387,7 @@ function drawArrow(x,y, x1,y1, x2,y2, x3,y3) {
 	var by = yoff+y*size+size/2;
 	var r = size/3;
 	canvasover2.beginPath();
-	canvasover2.fillStyle = "#060";
+	canvasover2.fillStyle = "#cccc00";
 	canvasover2.lineWidth = 1;
 	canvasover2.moveTo(bx+x1*r, by+y1*r);
 	canvasover2.lineTo(bx+x2*r, by+y2*r);
